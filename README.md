@@ -60,7 +60,7 @@ npm ci
 npm run dev
 ```
 
-Open the local address printed by Vite, normally [http://localhost:5173/gym_workout/](http://localhost:5173/gym_workout/). Stop the dev server with **Ctrl+C** before running further commands in that terminal.
+Open the local address printed by Vite, normally [http://localhost:5173/](http://localhost:5173/). Stop the dev server with **Ctrl+C** before running further commands in that terminal.
 
 `npm ci` installs every dependency from the included `package-lock.json`. Do not scaffold another Vite project inside this extracted directory.
 
@@ -84,7 +84,7 @@ Every source file below is provided in the archive.
 | File or directory | Purpose |
 | --- | --- |
 | `package.json`, `package-lock.json`, `.nvmrc` | Pinned dependencies, scripts, and Node version |
-| `vite.config.js` | React plugin, `/gym_workout/` asset base, `docs/` output |
+| `vite.config.js` | React plugin, relative asset URLs, `docs/` output |
 | `postcss.config.js` | Tailwind 4 integration |
 | `index.html` | Vite entry document |
 | `.gitignore` | Excludes dependencies and local environment files; keeps `docs/` tracked |
@@ -146,9 +146,9 @@ npm run build
 npm run preview
 ```
 
-Open [http://localhost:4173/gym_workout/](http://localhost:4173/gym_workout/). Stop the preview with **Ctrl+C**.
+Open [http://localhost:4173/](http://localhost:4173/). Stop the preview with **Ctrl+C**.
 
-The production build and all 19 automated tests passed when this project was prepared. Browser rendering and click-through tests were not available in the build environment; check the UI on your browser before publishing.
+Run `npm test` for data and deployment regression checks. The deployment checks cover both branch publishing folders, the source-page redirect, and all production asset imports. These checks do not replace a browser rendering test.
 
 The tests cover baseline-vs-PR behavior, volume increases, backdated edits, same-day ordering, zero-load sets, date boundaries, measurement upserts, validation, reversible supplement toggles, persistence across reloads, quota failures, corrupted data, stale tabs, and backup restoration.
 
@@ -214,13 +214,13 @@ If the remote already has commits, use the clone workflow instead; do not force-
 
 ## 6. Deploy with your existing branch-based Pages setting
 
-The app is already configured for your repository name:
+The app uses relative asset URLs so it can load from either supported publishing folder:
 
 ```js
 // vite.config.js
 export default defineConfig({
   plugins: [react()],
-  base: '/gym_workout/',
+  base: './',
   build: {
     outDir: 'docs',
     emptyOutDir: true,
@@ -228,7 +228,7 @@ export default defineConfig({
 });
 ```
 
-Vite requires the repository path as its base for a project site; see the [Vite deployment guide](https://vite.dev/guide/static-deploy).
+Vite's [relative base option](https://vite.dev/guide/build.html#relative-base) keeps scripts, styles, and lazy-loaded pages relative to the compiled site. If Pages serves the repository root, the source `index.html` automatically opens `docs/` while preserving the selected hash route. When Pages serves `/docs`, the app opens directly. The redirect is disabled by Vite in development and production builds.
 
 After pushing the source and built `docs/` folder:
 
@@ -279,8 +279,8 @@ Always rebuild before pushing application changes. Pushing only changed JSX will
 
 | Symptom | Check |
 | --- | --- |
-| Pages shows source files or a blank app | Select **main /docs**, not main root. Ensure the build was committed. |
-| Asset 404s | Keep `base: '/gym_workout/'` exactly matching the repository name, then rebuild and push. |
+| App does not open | Confirm the latest Pages deployment succeeded and reload. Both **main /docs** and **main root** are supported; the root entry redirects to the built app. |
+| Asset 404s | Keep `base: './'`, run `npm run build`, and commit the complete generated `docs/` folder. |
 | Refreshing a route returns 404 | Use the app's hash links, such as `/gym_workout/#/metrics`. |
 | Your changes do not appear | Run `npm run build`, commit `docs/`, push, and wait for the Pages deployment. |
 | Vite will not start | Use Node 24 and reinstall with `npm ci`. |

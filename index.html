@@ -7,9 +7,33 @@
     <meta name="description" content="Your personal strength training log, body composition dashboard, and daily supplement tracker." />
     <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
     <title>Forge — Gym Workout</title>
+    <script id="hosting-fallback">
+      // Vite replaces this placeholder in both development and production.
+      // If it is untouched, a static host is serving source HTML: open the build.
+      if ('%BASE_URL%'.startsWith('%')) {
+        const destination = new URL('./docs/', window.location.href);
+        destination.search = window.location.search;
+        destination.hash = window.location.hash;
+        window.location.replace(destination.href);
+      }
+    </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <main style="max-width:480px;margin:15vh auto;padding:32px;font-family:system-ui,sans-serif;color:#252b29;line-height:1.6">
+        <strong style="font-size:36px;letter-spacing:-2px">forge<span style="color:#ed6c3e">.</span></strong>
+        <h1 style="font-size:24px;margin-top:24px">Opening your training log…</h1>
+        <p id="startup-status" role="status">Getting your workouts, body metrics, and daily stack ready.</p>
+        <p><a href="" style="color:#b74924">Reload the app</a></p>
+        <noscript><p>Enable JavaScript in your browser to use your training log.</p></noscript>
+      </main>
+    </div>
+    <script>
+      window.setTimeout(function () {
+        const status = document.getElementById('startup-status');
+        if (status) status.textContent = 'The app could not finish loading. Reload this page to try again. Your saved training data has not been cleared.';
+      }, 12000);
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
